@@ -1,23 +1,15 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
 
-# Load data
+# Load the data
 df = pd.read_csv("combine_2009_2019_cleaned.csv")
 
-# Page header
-st.title("NFL Combine Metric vs. Draft Pick")
-st.subheader("Explore how athletic performance influences draft selection by position group")
+st.title("Combine Metric vs. Draft Pick")
+st.write("Select a combine event to visualize how it influences draft position.")
 
-# Filter options
-years = sorted(df['Year'].unique())
-positions = df['Pos_group'].dropna().unique()
-
-selected_years = st.multiselect("Select Year(s):", options=years, default=years)
-selected_positions = st.multiselect("Select Position Group(s):", options=positions, default=positions)
-
-# Select y-axis variable
+# Define valid metrics for Y-axis
 metric_options = {
     "40-Yard Dash": "40yd",
     "Vertical Jump": "Vertical",
@@ -26,18 +18,20 @@ metric_options = {
     "Shuttle Run": "Shuttle",
     "Bench Press Reps": "Bench"
 }
-selected_metric_label = st.selectbox("Select Combine Metric (Y-axis):", options=list(metric_options.keys()))
-selected_metric = metric_options[selected_metric_label]
 
-# Filter data
-filtered_df = df[(df['Year'].isin(selected_years)) & (df['Pos_group'].isin(selected_positions))]
-filtered_df = filtered_df.dropna(subset=['Pick', selected_metric, 'Pos_group'])
+# Select metric
+selected_label = st.selectbox("Choose Y-axis Combine Metric:", list(metric_options.keys()))
+selected_column = metric_options[selected_label]
 
-# Plot
-plt.figure(figsize=(10, 6))
-sns.scatterplot(data=filtered_df, x='Pick', y=selected_metric, hue='Pos_group', palette='tab10')
-plt.xlabel("Draft Pick")
-plt.ylabel(selected_metric_label)
-plt.title(f"{selected_metric_label} vs. Draft Pick by Position Group")
-plt.gca().invert_xaxis()  # Pick 1 = better
-st.pyplot(plt)
+# Filter out rows with missing data for required columns
+plot_df = df[['Pick', selected_column, 'Pos_group']].dropna()
+
+# Scatter plot
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.scatterplot(data=plot_df, x='Pick', y=selected_column, hue='Pos_group', palette='tab10', ax=ax)
+ax.set_title(f"{selected_label} vs. Draft Pick by Position Group")
+ax.set_xlabel("Draft Pick")
+ax.set_ylabel(selected_label)
+ax.invert_xaxis()  # Lower picks = higher priority
+
+st.pyplot(fig)
