@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 # Load the data
 df = pd.read_csv("combine_2009_2019_cleaned.csv")
 
-st.title("Combine Metric vs. Draft Pick")
-st.write("Select a combine event to visualize how it influences draft position.")
+st.title("NFL Combine: Metric vs. Draft Pick")
+st.write("Use the dropdown and filters to explore how athletic performance influences draft selection by position group.")
 
-# Define valid metrics for Y-axis
+# Select Combine Metric (Y-Axis)
 metric_options = {
     "40-Yard Dash": "40yd",
     "Vertical Jump": "Vertical",
@@ -18,20 +18,28 @@ metric_options = {
     "Shuttle Run": "Shuttle",
     "Bench Press Reps": "Bench"
 }
-
-# Select metric
 selected_label = st.selectbox("Choose Y-axis Combine Metric:", list(metric_options.keys()))
 selected_column = metric_options[selected_label]
 
-# Filter out rows with missing data for required columns
-plot_df = df[['Pick', selected_column, 'Pos_group']].dropna()
+# Filter by Year and Position Group
+years = sorted(df['Year'].dropna().unique())
+positions = sorted(df['Pos_group'].dropna().unique())
 
-# Scatter plot
+selected_years = st.multiselect("Select Year(s):", options=years, default=years)
+selected_positions = st.multiselect("Select Position Group(s):", options=positions, default=positions)
+
+# Filter the DataFrame
+filtered_df = df[
+    (df['Year'].isin(selected_years)) &
+    (df['Pos_group'].isin(selected_positions))
+].dropna(subset=['Pick', selected_column, 'Pos_group'])
+
+# Scatterplot
 fig, ax = plt.subplots(figsize=(10, 6))
-sns.scatterplot(data=plot_df, x='Pick', y=selected_column, hue='Pos_group', palette='tab10', ax=ax)
+sns.scatterplot(data=filtered_df, x='Pick', y=selected_column, hue='Pos_group', palette='tab10', ax=ax)
 ax.set_title(f"{selected_label} vs. Draft Pick by Position Group")
 ax.set_xlabel("Draft Pick")
 ax.set_ylabel(selected_label)
-ax.invert_xaxis()  # Lower picks = higher priority
+ax.invert_xaxis()  # Lower pick = better draft position
 
 st.pyplot(fig)
