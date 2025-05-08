@@ -7,15 +7,29 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("combine_2009_2019_cleaned.csv")
 
 st.title("NFL Combine: Metric vs. Draft Pick with Regression Lines")
-# Group by Year and Pos_group
-avg_pick = df.groupby(['Year', 'Pos_group'])['Pick'].mean().reset_index()
+
+# Get list of unique position groups
+position_groups = sorted(df['Pos_group'].unique())
+
+# Add a multiselect widget
+selected_positions = st.multiselect(
+    "Select Position Group(s) to View:",
+    options=position_groups,
+    default=position_groups[:1]  # Default to first one
+)
+
+# Filter data based on selection
+filtered_df = df[df['Pos_group'].isin(selected_positions)]
+
+# Group and calculate average pick
+avg_pick = filtered_df.groupby(['Year', 'Pos_group'])['Pick'].mean().reset_index()
 
 # Plot
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.lineplot(data=avg_pick, x='Year', y='Pick', hue='Pos_group', marker='o', ax=ax)
 ax.set_title("Average Draft Pick by Position Group Over Time")
-ax.set_ylabel("Average Draft Pick")
 ax.set_xlabel("Year")
+ax.set_ylabel("Average Draft Pick")
 ax.invert_yaxis()
 ax.legend(title="Position Group", bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
