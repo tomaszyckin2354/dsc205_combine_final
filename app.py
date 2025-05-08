@@ -115,6 +115,9 @@ st.dataframe(model.summary2().tables[1])
 # Predict draft picks using the model
 y_pred = model.predict(X_sm)
 
+r_squared = model.rsquared
+st.markdown(f"**R² (Coefficient of Determination):** {r_squared:.3f}")
+
 # Plot: Actual vs Predicted
 st.subheader("Actual vs. Predicted Draft Picks")
 
