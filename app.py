@@ -30,7 +30,6 @@ sns.lineplot(data=avg_pick, x='Year', y='Pick', hue='Pos_group', marker='o', ax=
 ax.set_title("Average Draft Pick by Position Group Over Time")
 ax.set_xlabel("Year")
 ax.set_ylabel("Average Draft Pick")
-ax.invert_yaxis()
 ax.legend(title="Position Group", bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 
