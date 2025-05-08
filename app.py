@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import statsmodels.api as sm 
 
 # Load data
 df = pd.read_csv("combine_2009_2019_cleaned.csv")
