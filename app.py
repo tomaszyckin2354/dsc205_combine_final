@@ -8,7 +8,7 @@ df = pd.read_csv("combine_2009_2019_cleaned.csv")
 
 st.title("NFL Combine: Metric vs. Draft Pick with Regression Lines")
 # Group by Year and Pos_group
-avg_pick = df_clean.groupby(['Year', 'Pos_group'])['Pick'].mean().reset_index()
+avg_pick = df.groupby(['Year', 'Pos_group'])['Pick'].mean().reset_index()
 
 # Plot
 fig, ax = plt.subplots(figsize=(12, 6))
