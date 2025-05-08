@@ -82,3 +82,31 @@ plt.title(f"{selected_label} vs. Draft Pick with Trendlines by Position Group")
 
 st.pyplot(fig)
 
+#linear regression
+combine_metrics = ['40yd', 'Vertical', 'Broad Jump', '3Cone', 'Shuttle', 'Bench']
+df = df.dropna(subset=['Pick', 'Pos_group'] + combine_metrics)
+
+# Position group selector
+position_groups = sorted(df['Pos_group'].unique())
+selected_position = st.selectbox("Select a Position Group:", position_groups)
+
+# Filter for selected position group
+group_df = df[df['Pos_group'] == selected_position]
+
+# Define X and y
+X = group_df[combine_metrics]
+y = group_df['Pick']
+
+# Add constant for statsmodels
+X_sm = sm.add_constant(X)
+
+# Run regression
+model = sm.OLS(y, X_sm).fit()
+
+# Show table of regression results
+st.subheader(f"Linear Regression for {selected_position}")
+st.write("**Target**: Draft Pick")
+st.write("**Features**: Combine Metrics")
+
+# Display regression summary as a table
+st.dataframe(model.summary2().tables[1])
