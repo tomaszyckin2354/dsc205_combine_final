@@ -6,20 +6,6 @@ import matplotlib.pyplot as plt
 # Load data
 df = pd.read_csv("combine_2009_2019_cleaned.csv")
 
-# Group and average
-avg_pick = df.groupby(['Year', 'Pos_group'])['Pick'].mean().reset_index()
-
-# Plot
-plt.figure(figsize=(12, 6))
-sns.lineplot(data=avg_pick, x='Year', y='Pick', hue='Pos_group', marker='o')
-plt.title("Average Draft Pick by Position Group Over Time")
-plt.ylabel("Average Draft Pick")
-plt.xlabel("Year")
-plt.gca().invert_yaxis()  # Lower draft picks are better
-plt.legend(title="Position Group", bbox_to_anchor=(1.05, 1), loc='upper left')
-plt.tight_layout()
-plt.show()
-
 st.title("NFL Combine: Metric vs. Draft Pick with Regression Lines")
 st.write("Explore how combine metrics influence draft position — with trendlines for each position group.")
 
@@ -67,3 +53,18 @@ plt.ylabel(selected_label)
 plt.title(f"{selected_label} vs. Draft Pick with Trendlines by Position Group")
 
 st.pyplot(fig)
+
+
+# Group and average
+avg_pick = df.groupby(['Year', 'Pos_group'])['Pick'].mean().reset_index()
+
+# Plot
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=avg_pick, x='Year', y='Pick', hue='Pos_group', marker='o')
+plt.title("Average Draft Pick by Position Group Over Time")
+plt.ylabel("Average Draft Pick")
+plt.xlabel("Year")
+plt.gca().invert_yaxis()  # Lower draft picks are better
+plt.legend(title="Position Group", bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
