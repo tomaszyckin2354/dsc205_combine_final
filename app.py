@@ -109,8 +109,6 @@ st.subheader(f"Linear Regression for {selected_position}")
 st.write("**Target**: Draft Pick")
 st.write("**Features**: Combine Metrics")
 
-# Display regression summary as a table
-st.dataframe(model.summary2().tables[1])
 
 # Predict draft picks using the model
 y_pred = model.predict(X_sm)
