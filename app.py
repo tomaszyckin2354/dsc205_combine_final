@@ -111,3 +111,19 @@ st.write("**Features**: Combine Metrics")
 
 # Display regression summary as a table
 st.dataframe(model.summary2().tables[1])
+
+# Predict draft picks using the model
+y_pred = model.predict(X_sm)
+
+# Plot: Actual vs Predicted
+st.subheader("Actual vs. Predicted Draft Picks")
+
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.scatterplot(x=y, y=y_pred)
+ax.set_xlabel("Actual Draft Pick")
+ax.set_ylabel("Predicted Draft Pick")
+ax.set_title(f"{selected_position}: Actual vs. Predicted Draft Picks")
+ax.plot([y.min(), y.max()], [y.min(), y.max()], color='red', linestyle='--')  # Reference line
+plt.tight_layout()
+
+st.pyplot(fig)
