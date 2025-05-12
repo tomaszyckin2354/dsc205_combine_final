@@ -36,7 +36,7 @@ plt.tight_layout()
 
 st.pyplot(fig)
 
-st.write("Explore how combine metrics influence draft position — with trendlines for each position group.")
+st.header("Explore how combine metrics influence draft position — with trendlines for each position group.")
 
 # Metric options
 metric_options = {
@@ -128,3 +128,66 @@ ax.plot([y.min(), y.max()], [y.min(), y.max()], color='red', linestyle='--')  # 
 plt.tight_layout()
 
 st.pyplot(fig)
+
+st.write('Conclusions: Defensive Back, Linebacker, and Wide Receiver most strongly predict draft pick.')
+
+st.header('Examine draft pick based on overall combine statistics')
+combine_metrics = ['40yd', 'Vertical', 'Bench', 'Broad Jump', '3Cone', 'Shuttle']
+target = 'Pick'
+
+# Drop rows with missing values
+df = df.dropna(subset=combine_metrics + [target])
+
+# Show raw data
+with st.expander("Preview Data"):
+    st.dataframe(df.head())
+
+# Model training
+X = df[combine_metrics]
+y = df[target]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+# Evaluation metrics
+r2 = r2_score(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+st.metric(label="R-squared Score", value=f"{r2:.3f}")
+st.metric(label="Mean Squared Error", value=f"{mse:.2f}")
+
+# Visualization
+st.subheader("Actual vs. Predicted Picks")
+
+# Select metric for coloring
+hue_metric = st.selectbox("Select a combine metric for color gradient (hue):", combine_metrics)
+
+# Prepare data for plotting
+plot_df = X_test.copy()
+plot_df['Actual Pick'] = y_test
+plot_df['Predicted Pick'] = y_pred
+
+# Plot
+fig, ax = plt.subplots(figsize=(8, 6))
+scatter = sns.scatterplot(
+    data=plot_df,
+    x='Actual Pick',
+    y='Predicted Pick',
+    hue=hue_metric,
+    palette='viridis',
+    edgecolor='k',
+    ax=ax
+)
+ax.plot([y.min(), y.max()], [y.min(), y.max()], 'r--')
+ax.set_title(f'Actual vs. Predicted Draft Pick (Hue: {hue_metric})')
+ax.legend(title=hue_metric, bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+st.pyplot(fig)
+
+# Coefficients chart
+st.subheader("Model Coefficients")
+coeff_df = pd.DataFrame({'Metric': X.columns, 'Coefficient': model.coef_})
+fig2, ax2 = plt.subplots(figsize=(8, 5))
+sns.barplot(x='Coefficient', y='Metric', data=coeff_df, ax=ax2)
+st.pyplot(fig2)
