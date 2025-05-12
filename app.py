@@ -7,7 +7,7 @@ import statsmodels.api as sm
 # Load data
 df = pd.read_csv("combine_2009_2019_cleaned.csv")
 
-st.title("NFL Combine: Metric vs. Draft Pick with Regression Lines")
+st.title("NFL Combine: Visualizations and Regression")
 
 # Get list of unique position groups
 position_groups = sorted(df['Pos_group'].unique())
